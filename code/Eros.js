@@ -6,6 +6,7 @@ var Game;
         }
         // inicio
         Eros.start = function () {
+            var x = prompt('select a gun: ');
             if (Eros.canvas) {
                 var canvas = Eros.canvas;
                 canvas.width = 1024;
@@ -14,35 +15,85 @@ var Game;
                 canvas.style.top = '50%';
                 canvas.style.left = '50%';
                 canvas.style.transform = 'translate(-50%,-50%)';
+                canvas.style.fontSize = '40px';
             }
-            Player.selected = 0;
+            if (x) {
+                Player.selected = parseInt(x);
+            }
+            else {
+                Player.selected = 0;
+            }
             Eros.controls();
             Eros.update();
-            var fps = 0;
-            var startTime = Date.now();
-            var frame = 0;
-            function tick() {
-                var time = Date.now();
-                frame++;
-                if (time - startTime > 1000) {
-                    fps = frame / ((time - startTime) / 1000);
-                    startTime = time;
-                    frame = 0;
-                }
-                if (Eros.ctx) {
-                    Eros.ctx.fillText(fps.toFixed(1), 20, 20, 50);
-                }
-                window.requestAnimationFrame(tick);
+            //colt
+            if (Player.selected === 0) {
+                Weapon.ammo = 6;
+                Weapon.maxAmmo = 6;
             }
-            tick();
+            //ak47
+            if (Player.selected === 1) {
+                Weapon.ammo = 30;
+                Weapon.maxAmmo = 30;
+            }
+            //FNscar
+            if (Player.selected === 2) {
+                Weapon.ammo = 32;
+                Weapon.maxAmmo = 32;
+            }
+            //uzi
+            if (Player.selected === 3) {
+                Weapon.ammo = 25;
+                Weapon.maxAmmo = 25;
+            }
+            //mp40
+            if (Player.selected === 4) {
+                Weapon.ammo = 32;
+                Weapon.maxAmmo = 32;
+            }
+            //p90
+            if (Player.selected === 5) {
+                Weapon.ammo = 50;
+                Weapon.maxAmmo = 50;
+            }
         };
         // animacion
         Eros.update = function () {
+            if (Player.selected === 0) {
+                // colt
+                Weapon.speed = 3;
+                Weapon.interval = 700;
+            }
+            if (Player.selected === 1) {
+                // ak47
+                Weapon.speed = 9;
+                Weapon.interval = 200;
+            }
+            if (Player.selected === 2) {
+                // uzi
+                Weapon.speed = 8;
+                Weapon.interval = 60;
+            }
+            if (Player.selected === 3) {
+                // scar
+                Weapon.speed = 8;
+                Weapon.interval = 150;
+            }
+            if (Player.selected === 4) {
+                // mp40
+                Weapon.speed = 8;
+                Weapon.interval = 100;
+            }
+            if (Player.selected === 5) {
+                // p90
+                Weapon.speed = 10;
+                Weapon.interval = 30;
+            }
+            //
             if (Player.selected < 0) {
-                Player.selected = 0;
+                Player.selected = Player.gun.length - 1;
             }
             else if (Player.selected > Player.gun.length - 1) {
-                Player.selected = Player.gun.length - 1;
+                Player.selected = 0;
             }
             // key controls handler
             if (Eros.lastKey_X == 'd') {
@@ -73,7 +124,7 @@ var Game;
                 if (Player.vel.x > 4.7) {
                     Player.vel.x = 5;
                 }
-                else if (Player.vel.x < -4.7) {
+                if (Player.vel.x < -4.7) {
                     Player.vel.x = -5;
                 }
             }
@@ -91,6 +142,10 @@ var Game;
                 if (Eros.ctx) {
                     // limpialla pantalla
                     Eros.ctx.clearRect(0, 0, Eros.canvas.width, Eros.canvas.height);
+                    // ammo
+                    Eros.ctx.font = 'bold 48px serif';
+                    Eros.ctx.fillStyle = 'red';
+                    Eros.ctx.fillText(Weapon.ammo + '', 20, 50);
                     // actualiza al jugador
                     Player.update();
                     // actualiza la posision del mouse
@@ -100,8 +155,11 @@ var Game;
         };
         // controles
         Eros.controls = function () {
+            var _a, _b;
             window.addEventListener('keydown', Eros.keyDownHandler);
             window.addEventListener('keyup', Eros.keyUpHandler);
+            (_a = Eros.canvas) === null || _a === void 0 ? void 0 : _a.addEventListener('mousedown', Eros.clickDHandler);
+            (_b = Eros.canvas) === null || _b === void 0 ? void 0 : _b.addEventListener('mouseup', Eros.clicUkHandler);
         };
         // keydown
         Eros.keyDownHandler = function (e) {
@@ -138,13 +196,23 @@ var Game;
                 case 'w':
                     Eros.lastKey_Y = 'w';
                     break;
-                case 'q':
-                    Player.selected -= 1;
-                    break;
-                case 'e':
-                    Player.selected += 1;
+                case 'r':
+                    Weapon.ammo = Weapon.maxAmmo;
                     break;
             }
+        };
+        // click
+        Eros.clickDHandler = function (e) {
+            Eros.id = Eros.int = setInterval(function (xd) {
+                Player.shoot(e);
+                Weapon.ammo--;
+                if (Weapon.ammo <= 0) {
+                    Weapon.ammo = 0;
+                }
+            }, Weapon.interval);
+        };
+        Eros.clicUkHandler = function (e) {
+            clearInterval(Eros.id);
         };
         var _a;
         Eros.canvas = document.querySelector('canvas');
@@ -156,7 +224,7 @@ var Game;
     var Player = /** @class */ (function () {
         function Player() {
         }
-        // dibuja al jugador
+        // dibuja al jugadorr
         Player.draw = function () {
             Player.player.src = Player.bot;
             var c = Eros.ctx;
@@ -167,9 +235,7 @@ var Game;
                 if (Mouse.pos.x < Player.pos.x) {
                     c.scale(-1, 1);
                 }
-                c.fillStyle = 'black';
                 Player.frame_width = Player.player.width / 4;
-                c.fillStyle = 'red';
                 c.drawImage(Player.player, Player.current_frame * Player.frame_width, 0, Player.frame_width, Player.frame_width, -32, -32, 64, 64);
                 Player.fps += 1;
                 if (Player.fps % 7 === 0) {
@@ -179,6 +245,24 @@ var Game;
                     Player.current_frame = 0;
                 }
                 c.restore();
+            }
+        };
+        // dispara
+        Player.shoot = function (e) {
+            if (Weapon.ammo > 0) {
+                if (Eros.canvas) {
+                    var angle = Math.atan2(Mouse.pos.y - Player.pos.y, Mouse.pos.x - Player.pos.x);
+                    var speed = Weapon.speed;
+                    var x = Math.cos(angle) * speed;
+                    var y = Math.sin(angle) * speed;
+                    var xd = new Audio('./sfx/shot.wav');
+                    xd.play();
+                    Bullet.bullets.push(new Bullet(Player.pos.x, Player.pos.y, x, y));
+                }
+            }
+            else {
+                var ad = new Audio('./sfx/click.wav');
+                ad.play();
             }
         };
         // dibuja el arma
@@ -217,6 +301,26 @@ var Game;
         // animacion del judgador
         Player.update = function () {
             Player.check_offScreen();
+            // draw bullets
+            Bullet.bullets.forEach(function (bull, index) {
+                if (bull) {
+                    bull.update();
+                    if (Eros.canvas) {
+                        if (bull.pos.x < 0) {
+                            Bullet.bullets.splice(index, bull + index);
+                        }
+                        if (bull.pos.x > Eros.canvas.width) {
+                            Bullet.bullets.splice(index, bull + index);
+                        }
+                        if (bull.pos.y < 0) {
+                            Bullet.bullets.splice(index, bull + index);
+                        }
+                        if (bull.pos.y > Eros.canvas.height) {
+                            Bullet.bullets.splice(index, bull + index);
+                        }
+                    }
+                }
+            });
             Player.draw();
             Player.drawGun();
             Player.pos.x += Player.vel.x;
@@ -246,7 +350,15 @@ var Game;
         Player.player = new Image();
         Player.bot = './assets/player/bmo.png';
         Player.weapon = new Image();
-        Player.gun = ['./assets/guns/gun.png', './assets/guns/AK47.png'];
+        Player.gunShot = new Audio('./sfx/shot.wav');
+        Player.gun = [
+            './assets/guns/gun.png',
+            './assets/guns/AK47.png',
+            './assets/guns/Uzi.png',
+            './assets/guns/FNScar.png',
+            './assets/guns/MP40.png',
+            './assets/guns/P90.png',
+        ];
         Player.selected = 0;
         // frame
         Player.fps = 0;
@@ -278,6 +390,43 @@ var Game;
         Mouse.w = 5;
         Mouse.h = 5;
         return Mouse;
+    }());
+    var Bullet = /** @class */ (function () {
+        function Bullet(px, py, x, y) {
+            this.pos = { x: 0.0, y: 0.0 };
+            this.vel = { x: 0.0, y: 0.0 };
+            this.pos = {
+                x: px,
+                y: py
+            };
+            this.vel = {
+                x: x,
+                y: y
+            };
+        }
+        Bullet.prototype.draw = function () {
+            if (Eros.ctx) {
+                var ctx = Eros.ctx;
+                ctx.fillStyle = 'red';
+                ctx.fillRect(this.pos.x + 32, this.pos.y + 32, 10, 10);
+            }
+        };
+        Bullet.prototype.update = function () {
+            this.draw();
+            if (Eros.ctx) {
+                var ctx = Eros.ctx;
+                this.pos.x += this.vel.x;
+                this.pos.y += this.vel.y;
+            }
+        };
+        Bullet.bullets = new Array();
+        return Bullet;
+    }());
+    Game.Bullet = Bullet;
+    var Weapon = /** @class */ (function () {
+        function Weapon() {
+        }
+        return Weapon;
     }());
 })(Game || (Game = {}));
 Game.Eros.start();
