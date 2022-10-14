@@ -1,0 +1,13 @@
+{
+  "name": "gamelib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "tsc Ask.ts -w",
+    "browi":"browserify Ask.js -o main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
