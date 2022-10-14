@@ -155,7 +155,7 @@ var Game;
     var Player = /** @class */ (function () {
         function Player() {
         }
-        // dibuja al jugador
+        // dibuja al jugadorr
         Player.draw = function () {
             Player.player.src = Player.bot;
             var c = Eros.ctx;

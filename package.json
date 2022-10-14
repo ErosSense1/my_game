@@ -1,13 +1,13 @@
 {
-  "name": "gamelib",
-  "version": "1.0.0",
-  "description": "",
-  "main": "main.js",
-  "scripts": {
-    "start": "tsc Ask.ts -w",
-    "browi":"browserify Ask.js -o main.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+	"name": "gamelib",
+	"version": "1.0.0",
+	"description": "",
+	"main": "main.js",
+	"scripts": {
+		"start": "tsc ./code/Ask.ts -w",
+		"browi": "browserify code/Ask.js -o code/Eros.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC"
 }

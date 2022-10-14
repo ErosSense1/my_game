@@ -168,7 +168,7 @@ namespace Game {
 		static fps = 0;
 		static frame_width = 0;
 		static current_frame = 0;
-		// dibuja al jugador
+		// dibuja al jugadorr
 		static draw() {
 			Player.player.src = Player.bot;
 			const c = Eros.ctx;
